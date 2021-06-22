@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/stylesheets/style.css" />
+    <title>Todo App</title>
+  </head>
+
+  <body>
+    <div class="main-container">
+      <%var n = new Date(); var y = n.getFullYear(); var m = n.getMonth() < 9 ?
+      '0' + (n.getMonth() + 1) : (n.getMonth() + 1); var min=n.getMinutes() < 9
+      ? '0' + (n.getMinutes() + 1) : (n.getMinutes() + 1); var hour=n.getHours()
+      < 9 ? '0' + (n.getHours() + 1) : (n.getHours() ); var d = n.getDate() < 10
+      ? '0' + n.getDate() : n.getDate(); var currentDate=
+      y+"-"+m+"-"+d+"T"+hour+":"+min;%>
+
+      <h1 class="header">Scheduler</h1>
+      <div class="todo">
+        <form method="POST" action="/addTodo">
+          <fieldset style="border: 2px solid #e4bcb4">
+            <legend style="color: teal">Add Task</legend>
+            <input
+              id="input"
+              type="text"
+              name="caption"
+              required
+              placeholder="What needs to be done?"
+            />
+            <div class="second-inputline">
+              <input
+                class="priority-input"
+                list="priority"
+                placeholder="Select Priority"
+                name="priority"
+                required
+              />
+              <datalist id="priority">
+                <option value="1">Low</option>
+                <option value="2">Medium</option>
+                <option value="3">High</option>
+              </datalist>
+              <input
+                class="date-input"
+                type="datetime-local"
+                id="todotime"
+                name="todotime"
+                required
+                min="<%= currentDate%>"
+              />
+              <input class="addButton" type="submit" value="Add" />
+            </div>
+          </fieldset>
+        </form>
+
+        <% if(data) {%> <% var count=0; %>
+        <ul id="list">
+          <% for(var i=0; i < data.length ;i++) { %> <% if(!data[i].isCompleted)
+          {%> <% count++;%> <%}%>
+          <li
+            class="item <%= data[i].priority==='3' ? 'priority-three' : data[i].priority==='2' ? 'priority-two' : 'priority-one'%>"
+          >
+            <form method="POST" action="/toggleTodo/<%= i %>">
+              <%if(data[i].isCompleted) { %>
+              <div class="checkbox-container circular-container">
+                <label class="checkbox-label">
+                  <input
+                    type="checkbox"
+                    class="checkbox"
+                    checked
+                    onchange="this.form.submit()"
+                  />
+                  <span class="checkbox-custom"></span>
+                </label>
+              </div>
+              <%}else{%>
+              <div class="checkbox-container circular-container">
+                <label class="checkbox-label">
+                  <input
+                    type="checkbox"
+                    class="checkbox"
+                    onchange="this.form.submit()"
+                  />
+                  <span class="checkbox-custom"></span>
+                </label>
+              </div>
+
+              <%}%>
+            </form>
+
+            <form class="content" method="POST" action="/deleteTodo/<%= i%>">
+              <span
+                class="<%= data[i].isCompleted ? 'completed' : data[i].isExpired ? 'completed' : 'uncomplete'%>"
+                ><%=data[i].caption %></span
+              >
+              <span class="todo-status"
+                ><%= data[i].isExpired ? "Expired" : data[i].isCompleted ?
+                "Done" :"Yet to be done" %></span
+              >
+              <input class="delButton" type="submit" value="x" />
+            </form>
+          </li>
+
+          <%}%>
+        </ul>
+        <%}%>
+        <div class="footer">
+          <div><span id="todo-length"><%=count%></span> items left</div>
+          <button id="all-todo">
+            <a href="/">All</a>
+          </button>
+          <button id="completed-todo">
+            <a href="/completed">Completed</a>
+          </button>
+          <button id="active-todo">
+            <a href="/active">Active</a>
+          </button>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
